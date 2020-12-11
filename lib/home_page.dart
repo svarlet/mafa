@@ -55,8 +55,7 @@ class _HomePageState extends State<HomePage> {
                 return Center(child: Text('Fetching shared preferences...'));
               } else {
                 return Table(
-                    children:
-                        _renderDataRows(snapshot.data).insert(0, tableHeader));
+                    children: [tableHeader, ..._renderDataRows(snapshot.data)]);
               }
             }));
   }
