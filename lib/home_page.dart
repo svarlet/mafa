@@ -22,25 +22,27 @@ class _HomePageState extends State<HomePage> {
           'baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz'));
   }
 
-  List<DataRow> _renderDataRows(SharedPreferences prefs) {
+  List<TableRow> _renderDataRows(SharedPreferences prefs) {
     return prefs
         .getKeys()
         .map((e) => MapEntry(e, prefs.get(e)))
         .where((aMapEntry) => aMapEntry.value is String)
         .map((aMapEntry) => MapEntry(aMapEntry.key, aMapEntry.value as String))
-        .map(_asDataRow)
+        .map(_asTableRow)
         .toList();
   }
 
-  DataRow _asDataRow(MapEntry<String, String> aMapEntry) {
-    return DataRow(cells: [
-      DataCell(Text(aMapEntry.key)),
-      DataCell(Text(aMapEntry.value))
+  TableRow _asTableRow(MapEntry<String, String> aMapEntry) {
+    return TableRow(children: [
+      Text(aMapEntry.key),
+      Text(aMapEntry.value, overflow: TextOverflow.ellipsis)
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
+    const tableHeader = TableRow(children: [Text('Key'), Text('Value')]);
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -52,13 +54,9 @@ class _HomePageState extends State<HomePage> {
               if (!snapshot.hasData) {
                 return Center(child: Text('Fetching shared preferences...'));
               } else {
-                return Column(children: [
-                  Expanded(
-                      child: DataTable(columns: [
-                    DataColumn(label: Text('Key')),
-                    DataColumn(label: Text('Value')),
-                  ], rows: _renderDataRows(snapshot.data)))
-                ]);
+                return Table(
+                    children:
+                        _renderDataRows(snapshot.data).insert(0, tableHeader));
               }
             }));
   }
