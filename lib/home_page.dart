@@ -52,11 +52,19 @@ class _HomePageState extends State<HomePage> {
             builder: (BuildContext context,
                 AsyncSnapshot<SharedPreferences> snapshot) {
               if (!snapshot.hasData) {
-                return Center(child: Text('Fetching shared preferences...'));
+                return LoadingSharedPreferences();
               } else {
                 return Table(
                     children: [tableHeader, ..._renderDataRows(snapshot.data)]);
               }
             }));
+  }
+}
+
+class LoadingSharedPreferences extends StatelessWidget {
+  static const message = 'Fetching shared preferences...';
+
+  Widget build(BuildContext context) {
+    return Center(child: Text(message));
   }
 }
