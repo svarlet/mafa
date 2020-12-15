@@ -22,6 +22,40 @@ class _HomePageState extends State<HomePage> {
           'baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz'));
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: FutureBuilder<SharedPreferences>(
+            future: _sharedPreferences,
+            builder: (BuildContext context,
+                AsyncSnapshot<SharedPreferences> snapshot) {
+              if (!snapshot.hasData) {
+                return LoadingSharedPreferences();
+              } else {
+                return SharedPreferencesTable(snapshot.data);
+              }
+            }));
+  }
+}
+
+class LoadingSharedPreferences extends StatelessWidget {
+  static const message = 'Fetching shared preferences...';
+
+  Widget build(BuildContext context) {
+    return Center(child: Text(message));
+  }
+}
+
+class SharedPreferencesTable extends StatelessWidget {
+  static const tableHeader = TableRow(children: [Text('Key'), Text('Value')]);
+
+  final SharedPreferences sharedPreferences;
+
+  SharedPreferencesTable(this.sharedPreferences);
+
   List<TableRow> _renderDataRows(SharedPreferences prefs) {
     return prefs
         .getKeys()
@@ -39,32 +73,8 @@ class _HomePageState extends State<HomePage> {
     ]);
   }
 
-  @override
   Widget build(BuildContext context) {
-    const tableHeader = TableRow(children: [Text('Key'), Text('Value')]);
-
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: FutureBuilder<SharedPreferences>(
-            future: _sharedPreferences,
-            builder: (BuildContext context,
-                AsyncSnapshot<SharedPreferences> snapshot) {
-              if (!snapshot.hasData) {
-                return LoadingSharedPreferences();
-              } else {
-                return Table(
-                    children: [tableHeader, ..._renderDataRows(snapshot.data)]);
-              }
-            }));
-  }
-}
-
-class LoadingSharedPreferences extends StatelessWidget {
-  static const message = 'Fetching shared preferences...';
-
-  Widget build(BuildContext context) {
-    return Center(child: Text(message));
+    return Table(
+        children: [tableHeader, ..._renderDataRows(this.sharedPreferences)]);
   }
 }
